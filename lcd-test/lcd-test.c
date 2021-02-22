@@ -4,6 +4,7 @@
 
 #define AQM1602_DEV_ADDRESS (0x3E) 
 
+//write "Command" to LCD
 void writeCmd(uint8_t cmd) {
 	uint8_t val[2];
 	val[0] = 0x00;
@@ -11,6 +12,7 @@ void writeCmd(uint8_t cmd) {
 	i2c_write_blocking(i2c0, AQM1602_DEV_ADDRESS, val, 2, false);
 }
 
+//write "Data" to LCD
 void writeData(uint8_t data) {
 	uint8_t val[2];
 	val[0] = 0x40;
@@ -18,8 +20,8 @@ void writeData(uint8_t data) {
 	i2c_write_blocking(i2c0, AQM1602_DEV_ADDRESS, val, 2, false);
 }
 
+//LCD init setting
 void lcd_init() {
-	//start lcd init setting
 	sleep_ms(40);
 	//Function set
 	writeCmd(0x38);
@@ -61,14 +63,15 @@ int main() {
     gpio_set_function(1, GPIO_FUNC_I2C);
     gpio_pull_up(0);
     gpio_pull_up(1);
-
+	
+	//LCD setup
 	lcd_init();
 
-	//display
+	//display "0" in [0,0]
 	uint8_t val;
-	//cmd: set ddram address [0,0]
+	//cmd: set ddram address [0,0] = 0x80
 	writeCmd(0x80);
-	//data: set data "0"
+	//data: set data "0" = 0x30
 	writeData(0x30);
 
     return 0;
