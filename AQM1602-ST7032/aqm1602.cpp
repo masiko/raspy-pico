@@ -4,8 +4,25 @@
 namespace aqm1602
 {
 
-aqm1602::aqm1602() {
+aqm1602::aqm1602() {	
+	// This example will use I2C0 on GPIO0 (SDA) and GPIO1 (SCL)
+	i2cInitialize(0, 10000, 0, 1);
 	lcdInitialize();
+}
+
+aqm1602::aqm1602(uint8_t ch = 0, unsigned int baudrate = 10000, uint8_t sda = 0, uint8_t scl = 1) {
+	i2cInitialize(ch, baudrate, sda, scl);
+	lcdInitialize();
+}
+
+//i2c init setting
+void aqm1602::i2cInitialize(uint8_t ch, unsigned int baudrate, uint8_t sda, uint8_t scl) {
+    if (ch == 1)	i2c_init(i2c1, baudrate);
+	else			i2c_init(i2c0, baudrate);
+    gpio_set_function(sda, GPIO_FUNC_I2C);
+    gpio_set_function(scl, GPIO_FUNC_I2C);
+    gpio_pull_up(sda);
+    gpio_pull_up(scl);
 }
 
 //write "Command" to LCD
