@@ -4,8 +4,14 @@
 int main() {
 	// Enable UART so we can print status output
     stdio_init_all();
-	// LCD setting	
-	aqm1602::aqm1602 lcd;
+	// i2c init setting
+	i2c_init(i2c0, 10000);
+	gpio_set_function(0, GPIO_FUNC_I2C);
+	gpio_set_function(1, GPIO_FUNC_I2C);
+	gpio_pull_up(0);
+	gpio_pull_up(1);
+	// LCD setting
+	aqm1602::aqm1602 lcd(i2c0);
 	int num = -99;
 	char sign;
 	uint8_t lcd_input[5];

@@ -8,15 +8,13 @@ namespace aqm1602
 
 class aqm1602 {
 private:
-	//i2c init setting
-	void i2cInitialize(uint8_t ch, unsigned int baudrate, uint8_t sda_pin, uint8_t scl_pin);
+	i2c_inst_t *i2c_ch;
 	//write "Command" to LCD
     void writeCmd(uint8_t cmd);
 	//write "Data" to LCD
     void writeData(uint8_t data);
 public:
-    aqm1602();
-    aqm1602(uint8_t ch, unsigned int baudrate, uint8_t sda_pin, uint8_t scl_pin);
+    aqm1602(i2c_inst_t *ch);
     ~aqm1602() {};
 	//LCD init setting
     void lcdInitialize();
