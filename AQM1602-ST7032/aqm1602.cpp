@@ -10,19 +10,19 @@ aqm1602::aqm1602() {
 	lcdInitialize();
 }
 
-aqm1602::aqm1602(uint8_t ch = 0, unsigned int baudrate = 10000, uint8_t sda = 0, uint8_t scl = 1) {
-	i2cInitialize(ch, baudrate, sda, scl);
+aqm1602::aqm1602(uint8_t ch = 0, unsigned int baudrate = 10000, uint8_t sda_pin = 0, uint8_t scl_pin = 1) {
+	i2cInitialize(ch, baudrate, sda_pin, scl_pin);
 	lcdInitialize();
 }
 
 //i2c init setting
-void aqm1602::i2cInitialize(uint8_t ch, unsigned int baudrate, uint8_t sda, uint8_t scl) {
+void aqm1602::i2cInitialize(uint8_t ch, unsigned int baudrate, uint8_t sda_pin, uint8_t scl_pin) {
     if (ch == 1)	i2c_init(i2c1, baudrate);
 	else			i2c_init(i2c0, baudrate);
-    gpio_set_function(sda, GPIO_FUNC_I2C);
-    gpio_set_function(scl, GPIO_FUNC_I2C);
-    gpio_pull_up(sda);
-    gpio_pull_up(scl);
+    gpio_set_function(sda_pin, GPIO_FUNC_I2C);
+    gpio_set_function(scl_pin, GPIO_FUNC_I2C);
+    gpio_pull_up(sda_pin);
+    gpio_pull_up(scl_pin);
 }
 
 //write "Command" to LCD
