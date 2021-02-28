@@ -75,7 +75,7 @@ void bmx055::imuInitialize() {
 	gyro_resolution = 0.0038;
 }
 
-void readAccl() {
+void bmx055::readAccl() {
 	uint8_t data[6];
 	uint8_t sub_addr[1] = {0x02};
 	int ax;
@@ -99,7 +99,7 @@ void readAccl() {
 	accl[2] = az*accl_resolution;   // renge +-2g
 }
 
-void readGyro() {
+void bmx055::readGyro() {
 	uint8_t data[6];
 	uint8_t sub_addr[1] = {0x02};
 	int gx;
@@ -124,7 +124,7 @@ void readGyro() {
 }
 
 void bmx055::readTemp() {
-	int8_t data[1];
+	uint8_t data[1];
 	uint8_t sub_addr[1] = {0x08};
 	int ack;
 	
@@ -158,7 +158,7 @@ void bmx055::getTempData(double *temp) {
 	*temp = chip_temp;
 }
 
-void bmx055::getData(double accl_data[3], double gyro_data[3] double *temp) {
+void bmx055::getData(double accl_data[3], double gyro_data[3], double *temp) {
 	getAcclData(accl_data);
 	getGyroData(gyro_data);
 	getTempData(temp);

@@ -13,7 +13,7 @@ int main() {
 	double temp;
 	
 	while(1) {
-		getData(accl, gyro, &temp);
+		imu.getData(accl, gyro, &temp);
 		printf("%f,%f,%f,%f,%f,%f,%f", 
 			accl[0], accl[1], accl[2], gyro[0], gyro[1], gyro[2], temp);
 	}

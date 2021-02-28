@@ -27,5 +27,6 @@ public:
 	void getAcclData(double data[3]);
 	void getGyroData(double data[3]);
 	void getTempData(double *temp);
-	void getData(double accl_data[3], double gyro_data[3] double *temp);
+	void getData(double accl_data[3], double gyro_data[3], double *temp);
 };
+}//end namespace bmx055
