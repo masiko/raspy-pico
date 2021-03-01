@@ -127,12 +127,15 @@ void bmx055::readTemp() {
 	uint8_t data[1];
 	uint8_t sub_addr[1] = {0x08};
 	int ack;
+	int temp;
 	
 	ack = i2c_write_blocking(i2c_ch, BMX055_ACCL_ADDRESS, sub_addr, 1, true);
 	// Read 6 bytes of data
 	if(ack == 1) i2c_read_blocking(i2c_ch, BMX055_ACCL_ADDRESS, data, 1, false);
 	// Convert the data to 8-bits
-	chip_temp = data[0]*0.5 + 23;
+	if(data[0] > 128)	temp = data[0] - 256;
+	else				temp = data[0];
+	chip_temp = temp*0.5 + 23;
 
 }
 

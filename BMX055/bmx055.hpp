@@ -19,11 +19,11 @@ private:
 	void readAccl();
 	void readGyro();
 	void readTemp();
-	void readData();
 public:
 	bmx055(i2c_inst_t *ch);
 	~bmx055(){};
 	void imuInitialize();
+	void readData();
 	void getAcclData(double data[3]);
 	void getGyroData(double data[3]);
 	void getTempData(double *temp);
