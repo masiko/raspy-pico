@@ -21,7 +21,9 @@ private:
 	void readTemp();
 public:
 	bmx055(i2c_inst_t *ch);
+	bmx055();
 	~bmx055(){};
+	void Initialize(i2c_inst_t *ch);
 	void imuInitialize();
 	void readData();
 	void getAcclData(double data[3]);

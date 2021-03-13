@@ -8,6 +8,13 @@ bmx055::bmx055(i2c_inst_t *ch) {
 	imuInitialize();
 }
 
+bmx055::bmx055() {}
+
+void bmx055::Initialize(i2c_inst_t *ch) {
+	i2c_ch = ch;
+	imuInitialize();
+}
+
 void bmx055::imuInitialize() {
 	uint8_t val[2];
 //----------------------------------------------------------------//
