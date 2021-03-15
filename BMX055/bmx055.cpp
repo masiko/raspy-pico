@@ -3,16 +3,20 @@
 namespace bmx055
 {
 
-bmx055::bmx055(i2c_inst_t *ch) {
+bmx055::bmx055(i2c_inst_t *ch, int delay_ms) {
 	i2c_ch = ch;
+	measurment_interval = delay_ms/1000.0;
 	imuInitialize();
+	warmingUp();
 }
 
 bmx055::bmx055() {}
 
-void bmx055::Initialize(i2c_inst_t *ch) {
+void bmx055::Initialize(i2c_inst_t *ch, int delay_ms) {
 	i2c_ch = ch;
+	measurment_interval = delay_ms/1000.0;
 	imuInitialize();
+	warmingUp();
 }
 
 void bmx055::imuInitialize() {
@@ -143,7 +147,30 @@ void bmx055::readTemp() {
 	if(data[0] > 128)	temp = data[0] - 256;
 	else				temp = data[0];
 	chip_temp = temp*0.5 + 23;
+}
 
+void bmx055::warmingUp() {
+	for (int i=0; i<3; i++) {
+		gyro_delta_integra[i] = 0.0;
+		gyro_offset[i] = 0.0;
+		angle[i] = 0.0;
+	}
+
+	sleep_ms(2000);
+	for (int i=0; i<200; i++) {
+		readData();
+		for (int j=0; j<3; j++) {
+			gyro_delta[j] = gyro[j] - gyro_past[j];
+			gyro_delta_integra[j] += gyro_delta[j];
+			gyro_offset[j] += gyro_delta_integra[j];
+			gyro_past[j] = gyro[j];
+		}
+		sleep_ms(100);
+	}
+
+	for (int i=0; i<3; i++) {
+		gyro_delta_integra[i] += -gyro_offset[i] / 200;
+	}
 }
 
 void bmx055::readData() {
@@ -168,10 +195,28 @@ void bmx055::getTempData(double *temp) {
 	*temp = chip_temp;
 }
 
+void bmx055::getAnglData(double data[3]) {
+	data[0] = angle[0];
+	data[1] = angle[1];
+	data[2] = angle[2];
+}
+
 void bmx055::getData(double accl_data[3], double gyro_data[3], double *temp) {
 	getAcclData(accl_data);
 	getGyroData(gyro_data);
 	getTempData(temp);
+}
+
+void bmx055::readDataCallback() {
+	readData();
+	for (int i=0; i<3; i++) {
+		gyro_delta[i] = gyro[i] - gyro_past[i];
+		gyro_delta_integra[i] += gyro_delta[i];
+		angle[i] += gyro_delta_integra[i]*measurment_interval*1.4;
+		gyro_past[i] = gyro[i];
+	}
+	printf("%f,%f,%f,%f,%f,%f,%f\n", 
+		angle[0], angle[1], angle[2], gyro[0], gyro[1], gyro[2], chip_temp);
 }
 
 }//end namespace bmx055
