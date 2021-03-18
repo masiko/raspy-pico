@@ -22,6 +22,9 @@ private:
 	double gyro_delta[3];
 	double gyro_delta_integra[3];
 	double gyro_offset[3];
+	int    ma_id;
+	double gyro_moving_average[3];
+	double gyro_moving_average_list[3][5];
 	double angle[3];
 
 	void readAccl();

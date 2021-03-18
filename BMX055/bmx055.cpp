@@ -6,6 +6,7 @@ namespace bmx055
 bmx055::bmx055(i2c_inst_t *ch, int delay_ms) {
 	i2c_ch = ch;
 	measurment_interval = delay_ms/1000.0;
+	ma_id = 0;
 	imuInitialize();
 	warmingUp();
 }
@@ -15,6 +16,7 @@ bmx055::bmx055() {}
 void bmx055::Initialize(i2c_inst_t *ch, int delay_ms) {
 	i2c_ch = ch;
 	measurment_interval = delay_ms/1000.0;
+	ma_id = 0;
 	imuInitialize();
 	warmingUp();
 }
@@ -153,11 +155,12 @@ void bmx055::warmingUp() {
 	for (int i=0; i<3; i++) {
 		gyro_delta_integra[i] = 0.0;
 		gyro_offset[i] = 0.0;
+		gyro_moving_average[i] = 0.0;
 		angle[i] = 0.0;
 	}
 
 	sleep_ms(2000);
-	for (int i=0; i<200; i++) {
+	for (int i=0; i<400; i++) {
 		readData();
 		for (int j=0; j<3; j++) {
 			gyro_delta[j] = gyro[j] - gyro_past[j];
@@ -165,12 +168,28 @@ void bmx055::warmingUp() {
 			gyro_offset[j] += gyro_delta_integra[j];
 			gyro_past[j] = gyro[j];
 		}
-		sleep_ms(100);
+		sleep_ms(measurment_interval);
 	}
 
 	for (int i=0; i<3; i++) {
-		gyro_delta_integra[i] += -gyro_offset[i] / 200;
+		gyro_delta_integra[i] -= gyro_offset[i] / 400;
 	}
+
+	for (ma_id=0; ma_id<5; ma_id++) {
+		readData();
+		for (int j=0; j<3; j++) {
+			gyro_delta[j] = gyro[j] - gyro_past[j];
+			gyro_delta_integra[j] += gyro_delta[j];
+			gyro_moving_average_list[j][ma_id] = gyro_delta_integra[j];
+			gyro_moving_average[j] += gyro_delta_integra[j];
+			gyro_past[j] = gyro[j];
+		}
+		sleep_ms(measurment_interval);
+	}
+	for (int i=0; i<3; i++) {
+		gyro_moving_average[i] /= 5.0;
+	}
+	ma_id = 0;
 }
 
 void bmx055::readData() {
@@ -210,13 +229,20 @@ void bmx055::getData(double accl_data[3], double gyro_data[3], double *temp) {
 void bmx055::readDataCallback() {
 	readData();
 	for (int i=0; i<3; i++) {
+		// delta & integara
 		gyro_delta[i] = gyro[i] - gyro_past[i];
 		gyro_delta_integra[i] += gyro_delta[i];
-		angle[i] += gyro_delta_integra[i]*measurment_interval*1.4;
+		// moving average
+		gyro_moving_average[i] += (gyro_delta_integra[i] - gyro_moving_average_list[i][ma_id]) / 5.0;
+		gyro_moving_average_list[i][ma_id] = gyro_delta_integra[i];
+		// culc ahgle
+		angle[i] += gyro_delta_integra[i]*measurment_interval;
+		//angle[i] += gyro_moving_average[i]*measurment_interval;
 		gyro_past[i] = gyro[i];
 	}
-	printf("%f,%f,%f,%f,%f,%f,%f\n", 
-		angle[0], angle[1], angle[2], gyro[0], gyro[1], gyro[2], chip_temp);
+	(ma_id < 4) ? ma_id++ : ma_id = 0;
+	printf("%f,%f,%f,%f,%f,%f,%f,%d\n", 
+		angle[0], angle[1], angle[2], gyro_delta_integra[0], gyro_delta_integra[1], gyro_delta_integra[2], chip_temp, ma_id);
 }
 
 }//end namespace bmx055
