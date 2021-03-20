@@ -235,9 +235,11 @@ void bmx055::readDataCallback() {
 		// moving average
 		gyro_moving_average[i] += (gyro_delta_integra[i] - gyro_moving_average_list[i][ma_id]) / 5.0;
 		gyro_moving_average_list[i][ma_id] = gyro_delta_integra[i];
-		// culc ahgle
-		angle[i] += gyro_delta_integra[i]*measurment_interval;
-		//angle[i] += gyro_moving_average[i]*measurment_interval;
+		// culc angle
+		//angle[i] += gyro_delta_integra[i]*measurment_interval;
+		if (gyro_moving_average[i] < -0.2 || 0.2 < gyro_moving_average[i]) {
+			angle[i] += gyro_moving_average[i]*measurment_interval*1.4;
+		}
 		gyro_past[i] = gyro[i];
 	}
 	(ma_id < 4) ? ma_id++ : ma_id = 0;
