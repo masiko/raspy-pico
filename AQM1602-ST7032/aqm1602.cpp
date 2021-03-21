@@ -9,6 +9,13 @@ aqm1602::aqm1602(i2c_inst_t *ch) {
 	lcdInitialize();
 }
 
+aqm1602::aqm1602() {}
+
+void aqm1602::Initialize(i2c_inst_t *ch) {
+	i2c_ch = ch;
+	lcdInitialize();
+}
+
 //write "Command" to LCD
 void aqm1602::writeCmd(uint8_t cmd) {
 	uint8_t val[2];

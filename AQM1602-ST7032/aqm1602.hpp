@@ -14,8 +14,10 @@ private:
 	//write "Data" to LCD
     void writeData(uint8_t data);
 public:
+	aqm1602();
     aqm1602(i2c_inst_t *ch);
     ~aqm1602() {};
+	void Initialize(i2c_inst_t *ch);
 	//LCD init setting
     void lcdInitialize();
 	//display data to ddram address
