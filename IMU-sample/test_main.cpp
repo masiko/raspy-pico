@@ -14,29 +14,22 @@ bool imu_callback(struct repeating_timer *t) {
 }
 
 bool lcd_callback(struct repeating_timer *t) {
-//	lcd.displaySign('+', 0, 0);
-//	lcd.displaySign('+', 0, 14);
 	static double angle_data[3];
 	int angle = 0;
 	char sign;
 	uint8_t lcd_input[5];
 
+	lcd.displayClear();
 	imu.getAnglData(angle_data);
 	
 	for (int i=0; i<3; i++) {
-//		printf("%d( ",i);
-		printf("+-");
 		angle = (int)angle_data[i];
 		lcd.cvtNum2LcdInput(angle, &sign, lcd_input);
 		lcd.displaySign(sign, 0, i*5);
 		for (int j=0; j<4; j++) {
-			printf("%d",j);
 			lcd.displayNumeric(lcd_input[j], 0, 5*i+4-j);
-			printf("%d ",j);
 		}
-		printf(")");
 	}	
-	printf("\n");
 
 	return true;
 }
@@ -61,7 +54,7 @@ int main() {
 	add_repeating_timer_ms(INTERVAL, imu_callback, NULL, &imu_timer);
 
 	struct repeating_timer lcd_timer;
-	add_repeating_timer_ms(1000, lcd_callback, NULL, &lcd_timer);
+	add_repeating_timer_ms(250, lcd_callback, NULL, &lcd_timer);
 		
 	while(1) {}
 
