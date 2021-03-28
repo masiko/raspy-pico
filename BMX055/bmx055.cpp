@@ -243,8 +243,10 @@ void bmx055::readDataCallback() {
 		gyro_past[i] = gyro[i];
 	}
 	(ma_id < 4) ? ma_id++ : ma_id = 0;
+/*
 	printf("%f,%f,%f,%f,%f,%f,%f,%d\n", 
 		angle[0], angle[1], angle[2], gyro_delta_integra[0], gyro_delta_integra[1], gyro_delta_integra[2], chip_temp, ma_id);
+*/
 }
 
 }//end namespace bmx055
